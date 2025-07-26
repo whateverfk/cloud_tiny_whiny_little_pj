@@ -54,3 +54,4 @@ class FlaskApp:
 
     def get_app(self):
         return self.app
+app = FlaskApp().app()

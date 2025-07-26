@@ -1,25 +1,86 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>ANTI-Grammar-Cop</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <title>AI Sửa Ngữ Pháp</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h3>ANTI-Grammar-Cop Project</h3>
-    <h2>Bạn đã từng cãi nhau trên mạng, bạn sắp thắng thì đối phương lôi lỗi chính tả ra để phản bác? 
-        Bạn thua trong tức tưởi khi cãi nhau với 1 sinh vật với room-temperature iq, đừng lo đã có ANTI-Grammar-Cop và bạn sẽ không bao giờ thua khi vì chính tả nữa!</h2>
+<body class="bg-gray-100 min-h-screen">
+  <div class="flex h-screen">
+    <!-- Sidebar bên trái -->
+    <div class="w-1/4 bg-white p-6 shadow-md space-y-6">
+      <h2 class="text-xl font-bold mb-4 text-indigo-600">Tùy chọn</h2>
+      <form method="POST" class="space-y-4">
 
-    <form method="POST">
-        <textarea name="user_input" placeholder="Nhập văn bản cần chỉnh sửa ở đây..."></textarea>
-        <button type="submit">Gửi</button>
-    </form>
-    
-    {% if ai_response %}
-    <div class="response-box">
-        <strong>Bản sửa lỗi:</strong>
-        <p>{{ ai_response }}</p>
+        <!-- Quốc gia gốc -->
+        <div>
+          <label for="language" class="block text-sm font-medium text-gray-700">Your Mother Language</label>
+          <select name="language" id="language" class="w-full mt-1 p-2 border border-gray-300 rounded">
+            <option value="vi">🇻🇳 Tiếng Việt</option>
+            <option value="en">🇺🇸 English</option>
+            <option value="ja">🇯🇵 Japanese</option>
+            <option value="fr">🇫🇷 French</option>
+            <option value="zh">🇨🇳 Chinese</option>
+          </select>
+        </div>
+
+        <!-- Phong cách chỉnh sửa -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Phong cách</label>
+          <div class="mt-2 space-y-1">
+            <label class="flex items-center">
+              <input type="radio" name="style" value="basic" checked class="mr-2"> Mặc định
+            </label>
+            <label class="flex items-center">
+              <input type="radio" name="style" value="formal" class="mr-2"> Lịch sự
+            </label>
+            <label class="flex items-center">
+              <input type="radio" name="style" value="funny" class="mr-2"> Hài hước
+            </label>
+            <label class="flex items-center">
+              <input type="radio" name="style" value="multiple" class="mr-2"> Nhiều phiên bản
+            </label>
+          </div>
+        </div>
+
+        <!-- Dịch -->
+        <div class="flex items-center">
+          <input type="checkbox" name="translate" id="translate" class="mr-2">
+          <label for="translate">Thêm dịch cho ae tranh luận tiếng nước ngoài</label>
+        </div>
+
+        <!-- Submit -->
+        <div>
+          <button
+            type="submit"
+            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded shadow"
+          >
+            Gửi
+          </button>
+        </div>
+      </form>
     </div>
-    {% endif %}
+
+    <!-- Main content bên phải -->
+    <div class="flex-1 p-8 overflow-auto">
+      <h1 class="text-2xl font-bold text-gray-800 mb-6">Nhập văn bản cần chỉnh sửa</h1>
+      <form method="POST">
+        <textarea
+          name="user_input"
+          id="user_input"
+          rows="6"
+          placeholder="Nhập văn bản tại đây..."
+          class="w-full p-4 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:outline-none resize-none mb-6"
+        >{{ request.form.user_input or '' }}</textarea>
+
+        {% if ai_response %}
+        <div class="bg-white p-6 border-l-4 border-indigo-500 shadow rounded-xl">
+          <h2 class="text-lg font-semibold text-indigo-700 mb-2">Kết quả chỉnh sửa:</h2>
+          <pre class="whitespace-pre-wrap text-gray-800">{{ ai_response }}</pre>
+        </div>
+        {% endif %}
+      </form>
+    </div>
+  </div>
 </body>
 </html>
