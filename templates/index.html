@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>ANTI-Grammar-Cop</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h3>ANTI-Grammar-Cop Project</h3>
+    <h2>Bạn đã từng cãi nhau trên mạng, bạn sắp thắng thì đối phương lôi lỗi chính tả ra để phản bác? 
+        Bạn thua trong tức tưởi khi cãi nhau với 1 sinh vật với room-temperature iq, đừng lo đã có ANTI-Grammar-Cop và bạn sẽ không bao giờ thua khi vì chính tả nữa!</h2>
+
+    <form method="POST">
+        <textarea name="user_input" placeholder="Nhập văn bản cần chỉnh sửa ở đây..."></textarea>
+        <button type="submit">Gửi</button>
+    </form>
+    
+    {% if ai_response %}
+    <div class="response-box">
+        <strong>Bản sửa lỗi:</strong>
+        <p>{{ ai_response }}</p>
+    </div>
+    {% endif %}
+</body>
+</html>
