@@ -48,6 +48,11 @@
         <input type="checkbox" name="translate" id="translate" class="mr-2">
         <label for="translate">Thêm dịch cho ae tranh luận tiếng nước ngoài</label>
       </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Tải file .txt hoặc .docx ...</label>
+        <input type="file" name="text_files" multiple accept=".txt,.docx" class="mt-2 w-full border border-gray-300 p-2 rounded">
+        <small class="text-sm text-gray-500">📎 Tối đa 100MB mỗi file, tổng 200MB.</small>
+      </div>
 
       <!-- Submit -->
       <div>
@@ -83,3 +88,14 @@
   </form>
 </body>
 </html>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const fileInput = document.querySelector('input[name="text_files"]');
+    fileInput.addEventListener("change", function () {
+      if (fileInput.files.length > 0) {
+        alert("🚧 Tính năng xử lý file chưa được hoàn thiện. Vui lòng thử lại sau hoặc nhập nội dung trực tiếp.");
+        fileInput.value = "";
+      }
+    });
+  });
+</script>
