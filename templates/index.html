@@ -6,7 +6,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen">
-  <form method="POST" class="flex h-screen"> <!-- ✅ FORM bao toàn bộ giao diện -->
+  <form method="POST"  enctype="multipart/form-data" class="flex h-screen"> <!--  FORM bao toàn bộ giao diện -->
 
     <!-- Sidebar bên trái -->
     <div class="w-1/4 bg-white p-6 shadow-md space-y-6">
@@ -48,9 +48,11 @@
         <input type="checkbox" name="translate" id="translate" class="mr-2">
         <label for="translate">Thêm dịch cho ae tranh luận tiếng nước ngoài</label>
       </div>
+
+      <!-- Tải file -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Tải file .txt hoặc .docx ...</label>
-        <input type="file" name="text_files" multiple accept=".txt,.docx" class="mt-2 w-full border border-gray-300 p-2 rounded">
+        <label class="block text-sm font-medium text-gray-700">Tải file .txt .pdf hoặc .docx ...</label>
+        <input type="file" name="text_files" accept=".txt,.docx,.pdf" class="mt-2 w-full border border-gray-300 p-2 rounded">
         <small class="text-sm text-gray-500">📎 Tối đa 100MB mỗi file, tổng 200MB.</small>
       </div>
 
@@ -88,7 +90,7 @@
   </form>
 </body>
 </html>
-<script>
+<!-- <script>
   document.addEventListener("DOMContentLoaded", function () {
     const fileInput = document.querySelector('input[name="text_files"]');
     fileInput.addEventListener("change", function () {
@@ -98,4 +100,4 @@
       }
     });
   });
-</script>
+</script> -->

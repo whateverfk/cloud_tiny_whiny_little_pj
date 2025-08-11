@@ -2,7 +2,7 @@ from flask import Flask, request, render_template
 import requests
 import os
 from dotenv import load_dotenv
-
+from pdf_reader import extract_text_from_pdf
 class FlaskApp:
     def __init__(self):
         load_dotenv()
@@ -16,7 +16,25 @@ class FlaskApp:
         @self.app.route("/", methods=["GET", "POST"])
         def index():
             ai_response = ""
+            
+
+
+
+                
+                
             if request.method == "POST":
+
+                uploaded_file = request.files.get("text_files")
+            
+
+                    # Nếu có file PDF được tải lên
+                if uploaded_file and uploaded_file.filename.endswith(".pdf"):
+                    try:
+                        user_input = extract_text_from_pdf(uploaded_file.stream)
+                        return render_template("index.html", ai_response=user_input)
+                    except Exception as e:
+                        return f"Loi khi doc PDF: {str(e)}"
+            
                 user_input = request.form.get("user_input", "")
                 language = request.form.get("language", "vi")
                 style = request.form.get("style", "basic")
@@ -36,21 +54,22 @@ class FlaskApp:
 
                 full_content = f"{prompt}\n\nĐoạn văn:\n{user_input}"
 
-                payload = {
-                    "model": "deepseek/deepseek-chat-v3-0324:free",
-                    "messages": [{"role": "user", "content": full_content}]
-                }
+                # payload = {
+                #     "model": "deepseek/deepseek-chat-v3-0324:free",
+                #     "messages": [{"role": "user", "content": full_content}]
+                # }
 
-                headers = {
-                    "Authorization": f"Bearer {self.API_KEY}",
-                    "Content-Type": "application/json"
-                }
+                # headers = {
+                #     "Authorization": f"Bearer {self.API_KEY}",
+                #     "Content-Type": "application/json"
+                # }
 
-                response = requests.post(self.OPENROUTER_API_URL, json=payload, headers=headers)
-                if response.ok:
-                    ai_response = response.json()["choices"][0]["message"]["content"]
+                # response = requests.post(self.OPENROUTER_API_URL, json=payload, headers=headers)
+                # if response.ok:
+                #     ai_response = response.json()["choices"][0]["message"]["content"]
 
-            return render_template("index.html", ai_response=ai_response)
+            return render_template("index.html", ai_response=user_input if user_input else "none")
+            
 
     def get_app(self):
         return self.app
