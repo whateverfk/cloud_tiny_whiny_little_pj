@@ -2,7 +2,7 @@ from flask import Flask, request, render_template
 import requests
 import os
 from dotenv import load_dotenv
-from pdf_reader import extract_text_from_pdf
+from pdf_reader import extract_text_from_pdf,extract_text_from_docx,extract_text_from_txt
 class FlaskApp:
     def __init__(self):
         load_dotenv()
@@ -16,14 +16,18 @@ class FlaskApp:
         @self.app.route("/", methods=["GET", "POST"])
         def index():
             ai_response = ""
-            
+            user_input = ""
 
 
 
                 
                 
             if request.method == "POST":
-
+                
+                user_input = request.form.get("user_input", "")
+                language = request.form.get("language", "vi")
+                style = request.form.get("style", "basic")
+                translate = request.form.get("translate")
                 uploaded_file = request.files.get("text_files")
             
 
@@ -34,11 +38,20 @@ class FlaskApp:
                         return render_template("index.html", ai_response=user_input)
                     except Exception as e:
                         return f"Loi khi doc PDF: {str(e)}"
-            
-                user_input = request.form.get("user_input", "")
-                language = request.form.get("language", "vi")
-                style = request.form.get("style", "basic")
-                translate = request.form.get("translate")
+
+                elif uploaded_file and uploaded_file.filename.endswith(".docx"):
+                    try:
+                        user_input = extract_text_from_docx(uploaded_file.stream)
+                        return render_template("index.html", ai_response=user_input)
+                    except Exception as e:
+                        return f"Loi khi doc DOCX: {str(e)}"
+
+                elif uploaded_file and uploaded_file.filename.endswith(".txt"):
+                    try:
+                        user_input = extract_text_from_txt(uploaded_file.stream)
+                        return render_template("index.html", ai_response=user_input)
+                    except Exception as e:
+                        return f"Loi khi doc TXT: {str(e)}"
 
                 # Tạo prompt động
                 prompt = "Hãy sửa lỗi chính tả và ngữ pháp trong đoạn văn sau. "
