@@ -52,7 +52,7 @@
       <!-- File upload -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Tải file .txt hoặc .docx ...</label>
-        <input type="file" name="text_files" multiple accept=".txt,.docx" class="mt-2 w-full border border-gray-300 p-2 rounded">
+        <input type="file" name="text_files"  accept=".txt,.docx,.pdf" class="mt-2 w-full border border-gray-300 p-2 rounded">
         <small class="text-sm text-gray-500">📎 Tối đa 100MB mỗi file, tổng 200MB.</small>
       </div>
 
@@ -83,8 +83,17 @@
         rows="6"
         placeholder="Nhập văn bản tại đây..."
         class="w-full p-4 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:outline-none resize-none mb-6"
-      >{{ request.form.user_input or '' }}</textarea>
 
+    
+     >{{ request.form.user_input or '' }}</textarea>
+
+     {% if ai_response %}
+      <div class="bg-white p-6 border-l-4 border-indigo-500 shadow rounded-xl">
+        <h2 class="text-lg font-semibold text-indigo-700 mb-2">Kết quả chỉnh sửa:</h2>
+        <pre class="whitespace-pre-wrap text-gray-800">{{ ai_response }}</pre>
+      </div>
+      {% endif %}
+<!-- 
       {% if file_upload and not ai_response %}
       <div class="bg-white p-6 border-l-4 border-green-500 shadow rounded-xl mb-6">
         <h2 class="text-lg font-semibold text-green-700 mb-2">Kết quả từ file:</h2>
@@ -104,7 +113,7 @@
         <h2 class="text-lg font-semibold text-indigo-700 mb-2">Kết quả từ văn bản nhập:</h2>
         <pre class="whitespace-pre-wrap text-gray-800">{{ ai_response }}</pre>
       </div>
-      {% endif %}
+      {% endif %}  -->
     </div>
 
   </form>

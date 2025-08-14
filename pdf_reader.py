@@ -74,13 +74,13 @@ def auto_correct(file_obj):
         filename = file_obj.filename.lower()
 
         if filename.endswith(".pdf"):
-            text = extract_text_from_pdf(file_obj.stream)
+            text = extract_text_from_pdf(file_obj)
             return text
         elif filename.endswith(".txt"):
-            text = extract_text_from_txt(file_obj.stream)
+            text = extract_text_from_txt(file_obj)
             return text
         elif filename.endswith(".docx"):
-            text = extract_text_from_docx(file_obj.stream)
+            text = extract_text_from_docx(file_obj)
             return text
         else:
             return "[Unsupported file type]"
