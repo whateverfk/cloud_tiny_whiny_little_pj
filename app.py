@@ -54,7 +54,7 @@ class FlaskApp:
 
                     # Nếu có file PDF được tải lên
                 if uploaded_file:
-                    file_upload = auto_correct(uploaded_file.stream)
+                    file_upload = auto_correct(uploaded_file)
                 elif not uploaded_file and not user_input:
                     return render_template("index.html", ai_response="Không có gì xử lý cả, đừng ấn bừa nhé! :V  ")
 

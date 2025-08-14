@@ -69,20 +69,19 @@ def correct_english(text):
     tool.close()
     return ' '.join(corrected_sentences)
 
-def auto_correct(file_stream):
+def auto_correct(file_obj):
     try:
-        # Xác định loại file dựa trên tên hoặc content_type
-        filename = file_stream.filename.lower()
+        filename = file_obj.filename.lower()
+
         if filename.endswith(".pdf"):
-            text = extract_text_from_pdf(file_stream)
+            text = extract_text_from_pdf(file_obj.stream)
         elif filename.endswith(".txt"):
-            text = extract_text_from_txt(file_stream)
+            text = extract_text_from_txt(file_obj.stream)
         elif filename.endswith(".docx"):
-            text = extract_text_from_docx(file_stream)
+            text = extract_text_from_docx(file_obj.stream)
         else:
             return "[Unsupported file type]"
 
-        # Phát hiện ngôn ngữ và gọi hàm sửa lỗi tương ứng
         lang = detect(text)
         if lang == 'en':
             return correct_english(text)
@@ -92,7 +91,8 @@ def auto_correct(file_stream):
             return f"[Unsupported language: {lang}] {text}"
 
     except Exception as e:
-        return f"[Có lỗi khi xử lý file cụ thể là gì thì chịu] {str(e)}"
+        return f"[Có lỗi khi xử lý file] {str(e)}"
+
 
 # if __name__ == "__main__":
 
