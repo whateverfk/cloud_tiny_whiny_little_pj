@@ -65,8 +65,7 @@ class FlaskApp:
                  
                 if response.ok:
                     ai_response = response.json()["choices"][0]["message"]["content"]
-            print("API status:", response.status_code)
-            print("API response:", response.text)
+            
 
             return render_template("index.html", ai_response=ai_response if ai_response else "           Chúc mừng đoạn trắng tinh của bạn không sai gì cả / Congratulations, your NOTHING have nothing wrong with it"  )
             #return render_template("index.html", file_upload=file_upload, ai_response=ai_response if user_input else "                   Chúc mừng đoạn trắng tinh của bạn không sai gì cả / Congratulations, your NOTHING have nothing wrong with it"  )
