@@ -2,7 +2,7 @@ from flask import Flask, request, render_template
 import requests
 import os
 from dotenv import load_dotenv
-from pdf_reader import extract_text_from_pdf,extract_text_from_docx,extract_text_from_txt
+from pdf_reader import auto_correct
 class FlaskApp:
     def __init__(self):
         load_dotenv()
@@ -17,10 +17,7 @@ class FlaskApp:
         def index():
             ai_response = ""
             user_input = ""
-
-
-
-                
+            file_upload =""  
                 
             if request.method == "POST":
                 
@@ -29,29 +26,6 @@ class FlaskApp:
                 style = request.form.get("style", "basic")
                 translate = request.form.get("translate")
                 uploaded_file = request.files.get("text_files")
-            
-
-                    # Nếu có file PDF được tải lên
-                if uploaded_file and uploaded_file.filename.endswith(".pdf"):
-                    try:
-                        user_input = extract_text_from_pdf(uploaded_file.stream)
-                        return render_template("index.html", ai_response=user_input)
-                    except Exception as e:
-                        return f"Loi khi doc PDF: {str(e)}"
-
-                elif uploaded_file and uploaded_file.filename.endswith(".docx"):
-                    try:
-                        user_input = extract_text_from_docx(uploaded_file.stream)
-                        return render_template("index.html", ai_response=user_input)
-                    except Exception as e:
-                        return f"Loi khi doc DOCX: {str(e)}"
-
-                elif uploaded_file and uploaded_file.filename.endswith(".txt"):
-                    try:
-                        user_input = extract_text_from_txt(uploaded_file.stream)
-                        return render_template("index.html", ai_response=user_input)
-                    except Exception as e:
-                        return f"Loi khi doc TXT: {str(e)}"
 
                 # Tạo prompt động
                 prompt = "Hãy sửa lỗi chính tả và ngữ pháp trong đoạn văn sau. "
@@ -67,22 +41,31 @@ class FlaskApp:
 
                 full_content = f"{prompt}\n\nĐoạn văn:\n{user_input}"
 
-                # payload = {
-                #     "model": "deepseek/deepseek-chat-v3-0324:free",
-                #     "messages": [{"role": "user", "content": full_content}]
-                # }
+                payload = {
+                    "model": "deepseek/deepseek-chat-v3-0324:free",
+                    "messages": [{"role": "user", "content": full_content}]
+                }
 
-                # headers = {
-                #     "Authorization": f"Bearer {self.API_KEY}",
-                #     "Content-Type": "application/json"
-                # }
+                headers = {
+                    "Authorization": f"Bearer {self.API_KEY}",
+                    "Content-Type": "application/json"
+                }
+                            
 
-                # response = requests.post(self.OPENROUTER_API_URL, json=payload, headers=headers)
-                # if response.ok:
-                #     ai_response = response.json()["choices"][0]["message"]["content"]
+                    # Nếu có file PDF được tải lên
+                if uploaded_file:
+                    file_upload = auto_correct(uploaded_file.stream)
+                elif not uploaded_file and not user_input:
+                    return render_template("index.html", ai_response="Không có gì xử lý cả, đừng ấn bừa nhé! :V  ")
 
-            return render_template("index.html", ai_response=user_input if user_input else "none")
-            
+                
+                response = requests.post(self.OPENROUTER_API_URL, json=payload, headers=headers)
+                 
+                if response.ok:
+                    ai_response = response.json()["choices"][0]["message"]["content"]
+
+            return render_template("index.html", file_upload=file_upload, ai_response=ai_response if user_input else "                   Chúc mừng đoạn trắng tinh của bạn không sai gì cả / Congratulations, your NOTHING have nothing wrong with it"  )
+
 
     def get_app(self):
         return self.app

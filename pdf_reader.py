@@ -25,7 +25,6 @@ def extract_text_from_docx(file_stream):
     return "\n".join([para.text for para in doc.paragraphs])
 
 
-import re
 
 def split_text_by_length(text):
     # Tách câu theo . ! ? hoặc xuống dòng, giữ dấu
@@ -67,10 +66,23 @@ def correct_english(text):
         corrected_sentences.append(corrected)
 
     # Ghép lại thành đoạn văn hoàn chỉnh
+    tool.close()
     return ' '.join(corrected_sentences)
 
-def auto_correct(text):
+def auto_correct(file_stream):
     try:
+        # Xác định loại file dựa trên tên hoặc content_type
+        filename = file_stream.filename.lower()
+        if filename.endswith(".pdf"):
+            text = extract_text_from_pdf(file_stream)
+        elif filename.endswith(".txt"):
+            text = extract_text_from_txt(file_stream)
+        elif filename.endswith(".docx"):
+            text = extract_text_from_docx(file_stream)
+        else:
+            return "[Unsupported file type]"
+
+        # Phát hiện ngôn ngữ và gọi hàm sửa lỗi tương ứng
         lang = detect(text)
         if lang == 'en':
             return correct_english(text)
@@ -78,19 +90,26 @@ def auto_correct(text):
             return correct_Vn(text)
         else:
             return f"[Unsupported language: {lang}] {text}"
+
     except Exception as e:
-        return f"[Error detecting language] {str(e)}"
+        return f"[Có lỗi khi xử lý file cụ thể là gì thì chịu] {str(e)}"
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    text_en = "She dont has any idear how to solve the problam."
-    text_vi = """
-    Tôi di học vào ngáy hôm qua nhưng quên mang sách.kinh tế viet nam dang dứng truoc 1 thoi ky đổi mơi chưa tung có tienf lệ trong lịch sử
+#     text_en = """
+#     She dont has any idear how to solve the problam. When I watched the anime, " 
+#     "I knew that they made a real song for episode 11. And when I searched on youtube, I was amazed.  Outstanding move, Waseda-san
+#     seriously？you made a whole manga and  anime just right for advertising  your song? well it's the coolest thing i‘ve ever met.good song by the way.
+#     """
 
-    """
 
-   
-    print(" VI:", auto_correct(text_vi))
+#     text_vi = """
+#     Tôi di học vào ngáy hôm qua nhưng quên mang sách.kinh tế viet nam dang dứng truoc 1 thoi ky đổi mơi chưa tung có tienf lệ trong lịch sử
+
+#     """
+
+#     print(" EN:", auto_correct(text_en))
+#     print(" VI:", auto_correct(text_vi))
 
 
 
