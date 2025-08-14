@@ -26,48 +26,48 @@ def extract_text_from_docx(file_stream):
 
 
 
-def split_text_by_length(text):
-    # Tách câu theo . ! ? hoặc xuống dòng, giữ dấu
-    sentences = re.findall(r'[^.!?\n]+[.!?]?', text)
-    chunks = [s.strip() for s in sentences if s.strip()]
-    return chunks
+# def split_text_by_length(text):
+#     # Tách câu theo . ! ? hoặc xuống dòng, giữ dấu
+#     sentences = re.findall(r'[^.!?\n]+[.!?]?', text)
+#     chunks = [s.strip() for s in sentences if s.strip()]
+#     return chunks
 
 
 
-def correct_Vn(Input_text):
-    sentences = split_text_by_length(Input_text)
-    VNspell_checker = pipeline(
-        "text2text-generation",
-        model="bmd1905/vietnamese-correction-v2"
-    )
+# def correct_Vn(Input_text):
+#     sentences = split_text_by_length(Input_text)
+#     VNspell_checker = pipeline(
+#         "text2text-generation",
+#         model="bmd1905/vietnamese-correction-v2"
+#     )
     
-    result_lines = ["Các câu có thể sai và đã được sửa:"]
-    for sentence in sentences:
-        pred = VNspell_checker(sentence, max_length=128)[0]['generated_text']
-        result_lines.append(f"- {sentence} => {pred}")
-    return "\n".join(result_lines)
+#     result_lines = ["Các câu có thể sai và đã được sửa:"]
+#     for sentence in sentences:
+#         pred = VNspell_checker(sentence, max_length=128)[0]['generated_text']
+#         result_lines.append(f"- {sentence} => {pred}")
+#     return "\n".join(result_lines)
 
 
 
     
 
 
-def correct_english(text):
-    # try:
-    tool = language_tool_python.LanguageTool('en-US')
-    # except Exception as e:   
-    #     tool = language_tool_python.LanguageToolPublicAPI('en-US')
+# def correct_english(text):
+#     # try:
+#     tool = language_tool_python.LanguageTool('en-US')
+#     # except Exception as e:   
+#     #     tool = language_tool_python.LanguageToolPublicAPI('en-US')
 
-    corrected_sentences = []
+#     corrected_sentences = []
 
-    for sentence in split_text_by_length(text):
-        matches = tool.check(sentence)
-        corrected = language_tool_python.utils.correct(sentence, matches)
-        corrected_sentences.append(corrected)
+#     for sentence in split_text_by_length(text):
+#         matches = tool.check(sentence)
+#         corrected = language_tool_python.utils.correct(sentence, matches)
+#         corrected_sentences.append(corrected)
 
-    # Ghép lại thành đoạn văn hoàn chỉnh
-    tool.close()
-    return ' '.join(corrected_sentences)
+#     # Ghép lại thành đoạn văn hoàn chỉnh
+#     tool.close()
+#     return ' '.join(corrected_sentences)
 
 def auto_correct(file_obj):
     try:
@@ -84,9 +84,11 @@ def auto_correct(file_obj):
 
         lang = detect(text)
         if lang == 'en':
-            return correct_english(text)
+            return (text)
+            #return correct_english(text)
         elif lang == 'vi':
-            return correct_Vn(text)
+            return(text)
+            #return correct_Vn(text)
         else:
             return f"[Unsupported language: {lang}] {text}"
 

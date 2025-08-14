@@ -27,6 +27,14 @@ class FlaskApp:
                 translate = request.form.get("translate")
                 uploaded_file = request.files.get("text_files")
 
+
+                if uploaded_file:
+                    file_upload = auto_correct(uploaded_file)
+                    user_input += file_upload
+                elif not uploaded_file and not user_input:
+                    return render_template("index.html", ai_response="Không có gì xử lý cả, đừng ấn bừa nhé! :V  ")
+                
+
                 # Tạo prompt động
                 prompt = "Hãy sửa lỗi chính tả và ngữ pháp trong đoạn văn sau. "
                 if style == "formal":
@@ -53,10 +61,7 @@ class FlaskApp:
                             
 
                     # Nếu có file PDF được tải lên
-                if uploaded_file:
-                    file_upload = auto_correct(uploaded_file)
-                elif not uploaded_file and not user_input:
-                    return render_template("index.html", ai_response="Không có gì xử lý cả, đừng ấn bừa nhé! :V  ")
+                
 
                 
                 response = requests.post(self.OPENROUTER_API_URL, json=payload, headers=headers)
@@ -64,7 +69,8 @@ class FlaskApp:
                 if response.ok:
                     ai_response = response.json()["choices"][0]["message"]["content"]
 
-            return render_template("index.html", file_upload=file_upload, ai_response=ai_response if user_input else "                   Chúc mừng đoạn trắng tinh của bạn không sai gì cả / Congratulations, your NOTHING have nothing wrong with it"  )
+            return render_template("index.html", ai_response=ai_response if user_input else "           Chúc mừng đoạn trắng tinh của bạn không sai gì cả / Congratulations, your NOTHING have nothing wrong with it"  )
+            #return render_template("index.html", file_upload=file_upload, ai_response=ai_response if user_input else "                   Chúc mừng đoạn trắng tinh của bạn không sai gì cả / Congratulations, your NOTHING have nothing wrong with it"  )
 
 
     def get_app(self):
