@@ -1,9 +1,9 @@
 from PyPDF2 import PdfReader
 from docx import Document
-from transformers import pipeline
-import re
-import language_tool_python
-from langdetect import detect
+#from transformers import pipeline
+#import re
+#import language_tool_python
+#from langdetect import detect
 
 def extract_text_from_pdf(file_stream):
     """
@@ -75,22 +75,23 @@ def auto_correct(file_obj):
 
         if filename.endswith(".pdf"):
             text = extract_text_from_pdf(file_obj.stream)
+            return text
         elif filename.endswith(".txt"):
             text = extract_text_from_txt(file_obj.stream)
+            return text
         elif filename.endswith(".docx"):
             text = extract_text_from_docx(file_obj.stream)
+            return text
         else:
             return "[Unsupported file type]"
 
-        lang = detect(text)
-        if lang == 'en':
-            return (text)
-            #return correct_english(text)
-        elif lang == 'vi':
-            return(text)
-            #return correct_Vn(text)
-        else:
-            return f"[Unsupported language: {lang}] {text}"
+        # lang = detect(text)
+        # if lang == 'en':
+        #     #return correct_english(text)
+        # elif lang == 'vi':
+        #     #return correct_Vn(text)
+        # else:
+        #     return f"[Unsupported language: {lang}] {text}"
 
     except Exception as e:
         return f"[Có lỗi khi xử lý file] {str(e)}"
