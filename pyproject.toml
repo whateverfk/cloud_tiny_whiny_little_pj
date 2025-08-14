@@ -6,9 +6,15 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "flask>=3.1.1",
+    "huggingface-hub[hf-xet]>=0.34.4",
+    "langdetect>=1.0.9",
+    "language-tool-python>=2.9.4",
     "pypdf2>=3.0.1",
     "python-docx>=1.2.0",
     "python-dotenv>=1.1.1",
     "requests>=2.32.4",
-    "streamlit>=1.47.1",
+    "sentencepiece>=0.2.1",
+    "torch>=2.8.0",
+    "transformers>=4.55.2",
+    "unidecode>=1.4.0",
 ]
