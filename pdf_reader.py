@@ -25,41 +25,32 @@ def extract_text_from_docx(file_stream):
     return "\n".join([para.text for para in doc.paragraphs])
 
 
-def split_text_by_length(text, max_length=300):
-    # Tách văn bản thành các câu
-    sentences = re.findall(r'[^.!?]+[.!?]?', text)
-    chunks = []
-    current_chunk = ""
+import re
 
-    for sentence in sentences:
-        sentence = sentence.strip()
-        if len(current_chunk) + len(sentence) <= max_length:
-            current_chunk += " " + sentence
-        else:
-            chunks.append(current_chunk.strip())
-            current_chunk = sentence
-
-    if current_chunk:
-        chunks.append(current_chunk.strip())
-
+def split_text_by_length(text):
+    # Tách câu theo . ! ? hoặc xuống dòng, giữ dấu
+    sentences = re.findall(r'[^.!?\n]+[.!?]?', text)
+    chunks = [s.strip() for s in sentences if s.strip()]
     return chunks
 
 
+
 def correct_Vn(Input_text):
+    sentences = split_text_by_length(Input_text)
+    VNspell_checker = pipeline(
+        "text2text-generation",
+        model="bmd1905/vietnamese-correction-v2"
+    )
+    
+    result_lines = ["Các câu có thể sai và đã được sửa:"]
+    for sentence in sentences:
+        pred = VNspell_checker(sentence, max_length=128)[0]['generated_text']
+        result_lines.append(f"- {sentence} => {pred}")
+    return "\n".join(result_lines)
 
-    text_chunks = split_text_by_length(Input_text)
 
- 
-    VNspell_checker = pipeline("text2text-generation", model="bmd1905/vietnamese-correction-v2")
-
-
-    corrected_chunks = VNspell_checker(text_chunks, max_length=512)
 
     
-    corrected_text = ' '.join([chunk['generated_text'] for chunk in corrected_chunks])
-
-    
-    return corrected_text
 
 
 def correct_english(text):
@@ -93,9 +84,12 @@ def auto_correct(text):
 if __name__ == "__main__":
 
     text_en = "She dont has any idear how to solve the problam."
-    text_vi = "Tooi di học vào ngáy hôm qua nhưng quên mang sách."
+    text_vi = """
+    Tôi di học vào ngáy hôm qua nhưng quên mang sách.kinh tế viet nam dang dứng truoc 1 thoi ky đổi mơi chưa tung có tienf lệ trong lịch sử
 
-    print(" EN:", auto_correct(text_en))
+    """
+
+   
     print(" VI:", auto_correct(text_vi))
 
 
