@@ -4,14 +4,29 @@ import requests
 import os
 from dotenv import load_dotenv
 from pdf_reader import auto_correct
+from flask import Flask, render_template, request, redirect, url_for
+from model import db, User, History
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+import requests
 class FlaskApp:
     def __init__(self):
         load_dotenv()
         self.app = Flask(__name__)
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+        self.app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+        db.init_app(self.app)
+        login_manager = LoginManager()
+        login_manager.init_app(self.app)
+        login_manager.user_loader(self.load_user)
         self.API_KEY = os.getenv("OPENROUTER_API_KEY")
         self.OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
         self.setup_routes()
+
+    def load_user(self, user_id):
+        return User.query.get(int(user_id))
+
 
     def setup_routes(self):
         @self.app.route("/", methods=["GET", "POST"])
@@ -19,7 +34,13 @@ class FlaskApp:
             ai_response = ""
             user_input = ""
             file_upload =""  
-                
+            history_id = request.form.get("history_id")
+            if history_id:
+                history = History.query.filter_by(id=history_id, user_id=current_user.id).first()
+                if history:
+                    ai_response = history.content
+                    histories = History.query.filter_by(user_id=current_user.id).order_by(History.timestamp.desc()).limit(10).all()
+                return render_template("index.html", ai_response=ai_response, histories=histories)
             if request.method == "POST":
                 
                 user_input = request.form.get("user_input", "")
@@ -65,12 +86,67 @@ class FlaskApp:
                  
                 if response.ok:
                     ai_response = response.json()["choices"][0]["message"]["content"]
-            
+                    # Lưu lịch sử nếu người dùng đã đăng nhập
+                    if current_user.is_authenticated:
+                        existing = History.query.filter_by(user_id=current_user.id, content=ai_response).first()
+                        if not existing:
+                            history = History(user_id=current_user.id, content=ai_response)
+                            db.session.add(history)
+                            db.session.commit()
 
-            return render_template("index.html", ai_response=ai_response if ai_response else "           Chúc mừng đoạn trắng tinh của bạn không sai gì cả / Congratulations, your NOTHING have nothing wrong with it"  )
+            histories = []
+            if current_user.is_authenticated:
+                histories = History.query.filter_by(user_id=current_user.id).order_by(History.timestamp.desc()).limit(10).all()
+            return render_template("index.html", ai_response=ai_response , histories=histories)
             #return render_template("index.html", file_upload=file_upload, ai_response=ai_response if user_input else "                   Chúc mừng đoạn trắng tinh của bạn không sai gì cả / Congratulations, your NOTHING have nothing wrong with it"  )
+
+        @self.app.route("/login", methods=["GET", "POST"])
+        def login():
+            if request.method == "POST":
+                username = request.form["username"]
+                password = request.form["password"]
+                user = User.query.filter_by(username=username).first()
+                if user and check_password_hash(user.password, password):
+                    login_user(user)
+                    return redirect("/")
+                return render_template("login.html", error="Sai thông tin đăng nhập")
+            return render_template("login.html")
+
+        @self.app.route("/register", methods=["GET", "POST"])
+        def register():
+            if request.method == "POST":
+                username = request.form["username"]
+                password = generate_password_hash(request.form["password"])
+                if User.query.filter_by(username=username).first():
+                    return render_template("register.html", error="Tên người dùng đã tồn tại")
+                new_user = User(username=username, password=password)
+                db.session.add(new_user)
+                db.session.commit()
+                login_user(new_user)
+                return redirect("/")
+            return render_template("register.html")
+
+        @self.app.route("/logout")
+        @login_required
+        def logout():
+            logout_user()
+            return redirect("/")
+
+        @self.app.route("/delete_history", methods=["POST"])
+        @login_required
+        def delete_history():
+            history_id = request.form.get("history_id")
+            history = History.query.filter_by(id=history_id, user_id=current_user.id).first()
+            if history:
+                db.session.delete(history)
+                db.session.commit()
+            return redirect("/")
 
 
     def get_app(self):
         return self.app
 app = FlaskApp().get_app()
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+    print("✅ Database đã được khởi tạo.")

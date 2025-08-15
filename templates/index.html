@@ -1,121 +1,113 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>AI Sửa Ngữ Pháp</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <title>AI Sửa Ngữ Pháp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen">
-  <form method="POST" enctype="multipart/form-data" class="flex h-screen">
 
-    <!-- Sidebar -->
-    <div class="w-1/4 bg-white p-6 shadow-md space-y-6">
-      <h2 class="text-xl font-bold mb-4 text-indigo-600">Tùy chọn</h2>
+<form method="POST" enctype="multipart/form-data" class="grid grid-cols-[1fr_4fr_1fr] h-screen">
 
-      <!-- Mother language -->
-      <div>
-        <label for="language" class="block text-sm font-medium text-gray-700">Your Mother Language</label>
-        <select name="language" id="language" class="w-full mt-1 p-2 border border-gray-300 rounded">
-          <option value="vi" {% if request.form.language == 'vi' %}selected{% endif %}>🇻🇳 Tiếng Việt</option>
-          <option value="en" {% if request.form.language == 'en' %}selected{% endif %}>🇺🇸 English</option>
-          <option value="ja" {% if request.form.language == 'ja' %}selected{% endif %}>🇯🇵 Japanese</option>
-          <option value="fr" {% if request.form.language == 'fr' %}selected{% endif %}>🇫🇷 French</option>
-          <option value="zh" {% if request.form.language == 'zh' %}selected{% endif %}>🇨🇳 Chinese</option>
-        </select>
-      </div>
+    <!-- Sidebar trái -->
+    <div class="bg-white p-6 shadow-md space-y-6 text-sm">
+        <h2 class="text-xl font-bold text-indigo-600">Tùy chọn</h2>
 
-      <!-- Style -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Phong cách</label>
-        <div class="mt-2 space-y-1">
-          <label class="flex items-center">
-            <input type="radio" name="style" value="basic" {% if request.form.style == 'basic' or not request.form.style %}checked{% endif %} class="mr-2"> Mặc định
-          </label>
-          <label class="flex items-center">
-            <input type="radio" name="style" value="formal" {% if request.form.style == 'formal' %}checked{% endif %} class="mr-2"> Lịch sự
-          </label>
-          <label class="flex items-center">
-            <input type="radio" name="style" value="funny" {% if request.form.style == 'funny' %}checked{% endif %} class="mr-2"> Hài hước
-          </label>
-          <label class="flex items-center">
-            <input type="radio" name="style" value="multiple" {% if request.form.style == 'multiple' %}checked{% endif %} class="mr-2"> Nhiều phiên bản
-          </label>
+        <!-- Ngôn ngữ -->
+        <div>
+            <label for="language" class="block font-medium text-gray-700">Ngôn ngữ mẹ đẻ</label>
+            <select name="language" id="language" class="w-full mt-1 p-2 border border-gray-300 rounded">
+                <option value="vi" {% if request.form.language == 'vi' %}selected{% endif %}>🇻🇳 Tiếng Việt</option>
+                <option value="en" {% if request.form.language == 'en' %}selected{% endif %}>🇺🇸 English</option>
+                <option value="ja" {% if request.form.language == 'ja' %}selected{% endif %}>🇯🇵 Japanese</option>
+                <option value="fr" {% if request.form.language == 'fr' %}selected{% endif %}>🇫🇷 French</option>
+                <option value="zh" {% if request.form.language == 'zh' %}selected{% endif %}>🇨🇳 Chinese</option>
+            </select>
         </div>
-      </div>
 
-      <!-- Translate -->
-      <div class="flex items-center">
-        <input type="checkbox" name="translate" id="translate" {% if request.form.translate %}checked{% endif %} class="mr-2">
-        <label for="translate">Thêm dịch cho ae tranh luận tiếng nước ngoài</label>
-      </div>
+        <!-- Phong cách -->
+        <div>
+            <label class="block font-medium text-gray-700">Phong cách</label>
+            <div class="mt-2 space-y-1">
+                <label class="flex items-center"><input type="radio" name="style" value="basic" {% if request.form.style == 'basic' or not request.form.style %}checked{% endif %} class="mr-2"> Mặc định</label>
+                <label class="flex items-center"><input type="radio" name="style" value="formal" {% if request.form.style == 'formal' %}checked{% endif %} class="mr-2"> Lịch sự</label>
+                <label class="flex items-center"><input type="radio" name="style" value="funny" {% if request.form.style == 'funny' %}checked{% endif %} class="mr-2"> Hài hước</label>
+                <label class="flex items-center"><input type="radio" name="style" value="multiple" {% if request.form.style == 'multiple' %}checked{% endif %} class="mr-2"> Nhiều phiên bản</label>
+            </div>
+        </div>
 
-      <!-- File upload -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Tải file .txt hoặc .docx ...</label>
-        <input type="file" name="text_files"  accept=".txt,.docx,.pdf" class="mt-2 w-full border border-gray-300 p-2 rounded">
-        <small class="text-sm text-gray-500">📎 Tối đa 100MB mỗi file, tổng 200MB.</small>
-      </div>
+        <!-- Dịch -->
+        <div class="flex items-center">
+            <input type="checkbox" name="translate" id="translate" {% if request.form.translate %}checked{% endif %} class="mr-2">
+            <label for="translate">Thêm dịch</label>
+        </div>
 
-      <!-- Submit -->
-      <div>
-        <button
-          type="submit"
-          class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded shadow"
-        >
-          Gửi
-        </button>
-      </div>
+        <!-- Upload file -->
+        <div>
+            <label class="block font-medium text-gray-700">Tải file (.txt, .docx, .pdf)</label>
+            <input type="file" name="text_files" accept=".txt,.docx,.pdf" class="mt-2 w-full border border-gray-300 p-2 rounded">
+            <small class="text-gray-500">📎 Tối đa 100MB mỗi file</small>
+        </div>
+
+        <!-- Gửi -->
+        <div>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded shadow">Gửi</button>
+        </div>
     </div>
 
-    <!-- Main content -->
-    <div class="flex-1 p-8 overflow-auto">
-      <h1 class="text-2xl font-bold text-gray-800 mb-6">Nhập văn bản cần chỉnh sửa</h1>
+    <!-- Nội dung chính -->
+    <div class="p-8 overflow-auto">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Nhập văn bản cần chỉnh sửa</h1>
 
-      {% if error_message %}
-      <div class="mb-4 p-4 bg-red-100 text-red-700 border border-red-300 rounded">
-        {{ error_message }}
-      </div>
-      {% endif %}
+        {% if error_message %}
+            <div class="mb-4 p-4 bg-red-100 text-red-700 border border-red-300 rounded">
+                {{ error_message }}
+            </div>
+        {% endif %}
 
-      <textarea
-        name="user_input"
-        id="user_input"
-        rows="6"
-        placeholder="Nhập văn bản tại đây..."
-        class="w-full p-4 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:outline-none resize-none mb-6"
+        <textarea name="user_input" id="user_input" rows="6" placeholder="Nhập văn bản tại đây..." class="w-full p-4 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:outline-none resize-none mb-6">{{ request.form.user_input or '' }}</textarea>
 
-    
-     >{{ request.form.user_input or '' }}</textarea>
-
-     {% if ai_response %}
-      <div class="bg-white p-6 border-l-4 border-indigo-500 shadow rounded-xl">
-        <h2 class="text-lg font-semibold text-indigo-700 mb-2">Kết quả chỉnh sửa:</h2>
-        <pre class="whitespace-pre-wrap text-gray-800">{{ ai_response }}</pre>
-      </div>
-      {% endif %}
-<!-- 
-      {% if file_upload and not ai_response %}
-      <div class="bg-white p-6 border-l-4 border-green-500 shadow rounded-xl mb-6">
-        <h2 class="text-lg font-semibold text-green-700 mb-2">Kết quả từ file:</h2>
-        <pre class="whitespace-pre-wrap text-gray-800">{{ file_upload }}</pre>
-      </div>
-      {% elif ai_response and not file_upload %}
-      <div class="bg-white p-6 border-l-4 border-indigo-500 shadow rounded-xl mb-6">
-        <h2 class="text-lg font-semibold text-indigo-700 mb-2">Kết quả từ văn bản nhập:</h2>
-        <pre class="whitespace-pre-wrap text-gray-800">{{ ai_response }}</pre>
-      </div>
-      {% elif file_upload and ai_response %}
-      <div class="bg-white p-6 border-l-4 border-green-500 shadow rounded-xl mb-6">
-        <h2 class="text-lg font-semibold text-green-700 mb-2">Kết quả từ file:</h2>
-        <pre class="whitespace-pre-wrap text-gray-800">{{ file_upload }}</pre>
-      </div>
-      <div class="bg-white p-6 border-l-4 border-indigo-500 shadow rounded-xl mb-6">
-        <h2 class="text-lg font-semibold text-indigo-700 mb-2">Kết quả từ văn bản nhập:</h2>
-        <pre class="whitespace-pre-wrap text-gray-800">{{ ai_response }}</pre>
-      </div>
-      {% endif %}  -->
+        {% if ai_response %}
+            <div class="bg-white p-6 border-l-4 border-indigo-500 shadow rounded-xl">
+                <h2 class="text-lg font-semibold text-indigo-700 mb-2">Kết quả chỉnh sửa:</h2>
+                <pre class="whitespace-pre-wrap text-gray-800">{{ ai_response }}</pre>
+            </div>
+        {% endif %}
     </div>
 
-  </form>
+    <!-- Sidebar phải -->
+    <div class="bg-white p-6 shadow-md space-y-6 text-sm overflow-y-auto">
+        {% if current_user.is_authenticated %}
+            <div class="mb-4 flex justify-between items-center">
+                <p class="text-sm text-gray-600">👋 Xin chào, <span class="font-medium">{{ current_user.username }}</span></p>
+                <a href="/logout" class="text-red-500 hover:underline text-sm">Đăng xuất</a>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">🕘 Lịch sử yêu cầu</h3>
+                <ul class="space-y-2">
+                    {% for item in histories %}
+                        <li class="bg-gray-50 p-3 rounded-lg flex justify-between items-start shadow-sm hover:shadow-md transition">
+                            <form method="POST" action="/" class="flex-1">
+                                <input type="hidden" name="history_id" value="{{ item.id }}">
+                                <button type="submit" class="text-indigo-600 hover:underline text-sm truncate w-full text-left">{{ item.content[:30] }}{% if item.content|length > 30 %}...{% endif %}</button>
+                            </form>
+                             <form method="POST" action="/delete_history" onsubmit="return confirm('Xóa bản ghi này?')">
+                                <input type="hidden" name="history_id" value="{{ item.id }}">
+                                <button type="submit" class="text-red-500 hover:text-red-700 text-xs ml-2">🗑️</button>
+                              </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <div class="mb-4 flex space-x-4">
+                <a href="/login" class="text-indigo-600 hover:underline text-sm">Đăng nhập</a>
+                <a href="/register" class="text-indigo-600 hover:underline text-sm">Đăng ký</a>
+            </div>
+        {% endif %}
+    </div>
+
+</form>
 </body>
 </html>
