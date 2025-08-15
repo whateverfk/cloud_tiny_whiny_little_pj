@@ -13,7 +13,8 @@ class FlaskApp:
     def __init__(self):
         load_dotenv()
         self.app = Flask(__name__)
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///app.db")
+        self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         self.app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
         db.init_app(self.app)
         login_manager = LoginManager()
@@ -149,4 +150,4 @@ app = FlaskApp().get_app()
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    print("✅ Database đã được khởi tạo.")
+    
