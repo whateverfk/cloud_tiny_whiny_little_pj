@@ -13,6 +13,7 @@ class FlaskApp:
     def __init__(self):
         load_dotenv()
         self.app = Flask(__name__)
+        #self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
         self.app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///app.db")
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         self.app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
@@ -36,12 +37,7 @@ class FlaskApp:
             user_input = ""
             file_upload =""  
             history_id = request.form.get("history_id")
-            if history_id:
-                history = History.query.filter_by(id=history_id, user_id=current_user.id).first()
-                if history:
-                    ai_response = history.content
-                    histories = History.query.filter_by(user_id=current_user.id).order_by(History.timestamp.desc()).limit(10).all()
-                return render_template("index.html", ai_response=ai_response, histories=histories)
+            
             if request.method == "POST":
                 
                 user_input = request.form.get("user_input", "")
@@ -54,9 +50,15 @@ class FlaskApp:
                 if uploaded_file:
                     file_upload = auto_correct(uploaded_file)
                     user_input += file_upload
-                elif not uploaded_file and not user_input:
+
+                if not uploaded_file and not user_input and not history_id:
                     return render_template("index.html", ai_response="Không có gì xử lý cả, đừng ấn bừa nhé! :V  ")
-                
+                elif history_id and not user_input:
+                    history = History.query.filter_by(id=history_id, user_id=current_user.id).first()
+                    if history:
+                        ai_response = history.content
+                        histories = History.query.filter_by(user_id=current_user.id).order_by(History.timestamp.desc()).limit(10).all()
+                    return render_template("index.html", ai_response=ai_response, histories=histories)
 
                 # Tạo prompt động
                 prompt = "Hãy sửa lỗi chính tả và ngữ pháp trong đoạn văn sau. "
