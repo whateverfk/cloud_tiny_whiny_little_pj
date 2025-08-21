@@ -84,18 +84,27 @@ class FlaskApp:
                     "Content-Type": "application/json"
                 }
 
-                
+
                 response = requests.post(self.OPENROUTER_API_URL, json=payload, headers=headers)
-                 
-                if response.ok:
-                    ai_response = response.json()["choices"][0]["message"]["content"]
-                    # Lưu lịch sử nếu người dùng đã đăng nhập
-                    if current_user.is_authenticated:
-                        existing = History.query.filter_by(user_id=current_user.id, content=ai_response).first()
-                        if not existing:
-                            history = History(user_id=current_user.id, content=ai_response)
-                            db.session.add(history)
-                            db.session.commit()
+                try:
+                    response_json = response.json()
+                except Exception as e:
+                    ai_response = f"Hãy thử lại vì API không trả về JSON hợp lệ: {e}\nNội dung: {response.text}"
+
+                else:
+                    if response.ok:
+                        ai_response = response.json()["choices"][0]["message"]["content"]
+                        # Lưu lịch sử nếu người dùng đã đăng nhập
+                        if current_user.is_authenticated:
+                            existing = History.query.filter_by(user_id=current_user.id, content=ai_response).first()
+                            if not existing:
+                                history = History(user_id=current_user.id, content=ai_response)
+                                db.session.add(history)
+                                db.session.commit()
+                    else:
+                        ai_response = f" thử lại vì API Error: {response_json.get('error', {}).get('message', 'Unknown error')}"
+
+
 
             histories = []
             if current_user.is_authenticated:
