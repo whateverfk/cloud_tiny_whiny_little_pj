@@ -93,7 +93,12 @@ class FlaskApp:
 
                 else:
                     if response.ok:
-                        ai_response = response.json()["choices"][0]["message"]["content"]
+                        if response.status_code == 200:
+                            data = response.json()
+                        if "choices" in data:
+                            ai_response = response.json()["choices"][0]["message"]["content"]
+                        else:
+                            ai_response = "Phản hồi không hợp lệ từ API."
                         # Lưu lịch sử nếu người dùng đã đăng nhập
                         if current_user.is_authenticated:
                             existing = History.query.filter_by(user_id=current_user.id, content=ai_response).first()
